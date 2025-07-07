@@ -24,11 +24,11 @@ if uploaded_file:
 
     # Expected column names after flattening
     overlay_col = "Overlay_ID_Unnamed:_3_level_1"
-    underlay_col = "Underlay_CID_Unnamed:4_level_1"
+    underlay_col = "Underlay_CID_Unnamed:_4_level_1"
     source_col = "Applications_Source"
     destination_col = "Applications_Destination"
     policy_col = "SDWAN_policy_Unnamed:_10_level_1"
-    forwarding_col = "Forwaridng_Profile_Unnamed:10_level_1"
+    forwarding_col = "Forwaridng_Profile_Unnamed:_10_level_1"
     criteria_col = "Citeria_Unnamed:_19_level_1"
     next_hops = [
         "Next_Hop_Primary", "Next_Hop_Secondary", 
