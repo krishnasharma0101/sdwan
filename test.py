@@ -106,4 +106,5 @@ if uploaded_file:
  # Display raw table for the selected destination
                 st.subheader(f"Details for Destination: {query_value}")
                 display_cols = [source_col, overlay_col, underlay_col] + next_hops + [policy_col, criteria_col, forwarding_col, transport_primary, transport_secondary]
-                st.dataframe(filtered_df[display_cols])
+                transposed_df = filtered_df[display_cols].T
+                st.dataframe(transposed_df)
