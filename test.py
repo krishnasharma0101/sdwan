@@ -19,14 +19,14 @@ if uploaded_file:
     # Extract necessary columns based on provided structure
     overlay_col = "Overlay ID"
     underlay_col = "Underlay CID"
-    source_col = "Applications_Source"
-    destination_col = "Applications_Destination"
+    source_col = "Applications"
+    destination_col = "Unnamed: 9"
     policy_col = "SDWAN policy"
-    forwarding_col = "Forwarding Profile"
+    forwarding_col = "Forwaridng Profile"
     criteria_col = "Citeria"
 
     # Next hop columns
-    next_hops = ["Next Hop(Primary)", "Next Hop(secondary)", "Next Hop(Turtary)", "Next Hop(Quarternary)"]
+    next_hops = ["Next Hop", "Unnamed: 15", "Unnamed: 16", "Unnamed: 17"]
 
     # Clean up columns if subheaders are flattened (e.g., Applications_Source)
     df.columns = [col.strip().replace(" ", "_") for col in df.columns]
