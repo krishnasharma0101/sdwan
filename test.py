@@ -23,16 +23,16 @@ if uploaded_file:
     st.dataframe(df.head())
 
     # Expected column names after flattening
-    overlay_col = "Overlay_ID"
-    underlay_col = "Underlay_CID"
+    overlay_col = "Overlay_ID_Unnamed:_3_level_1"
+    underlay_col = "Underlay_CID_Unnamed:4_level_1"
     source_col = "Applications_Source"
     destination_col = "Applications_Destination"
-    policy_col = "SDWAN_policy"
-    forwarding_col = "Forwarding_Profile"
-    criteria_col = "Citeria"
+    policy_col = "SDWAN_policy_Unnamed:_10_level_1"
+    forwarding_col = "Forwaridng_Profile_Unnamed:10_level_1"
+    criteria_col = "Citeria_Unnamed:_19_level_1"
     next_hops = [
-        "Next_Hop(Primary)", "Next_Hop(secondary)", 
-        "Next_Hop(Turtary)", "Next_Hop(Quarternary)"
+        "Next_Hop_Primary", "Next_Hop_Secondary", 
+        "Next_Hop_Turtary", "Next_Hop_Quaternary"
     ]
 
     # Ensure all required columns exist
