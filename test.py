@@ -100,3 +100,8 @@ if uploaded_file:
                     html_content = f.read()
                 st.components.v1.html(html_content, height=750, scrolling=True)
                 os.unlink(tmp_file.name)
+
+ # Display raw table for the selected destination
+                st.subheader(f\"Details for Destination: {query_value}\")
+                display_cols = [source_col, overlay_col, underlay_col] + next_hops + [policy_col, criteria_col, forwarding_col]
+                st.dataframe(filtered_df[display_cols])
