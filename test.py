@@ -11,33 +11,43 @@ st.title("SD-WAN Flow Visualizer")
 uploaded_file = st.file_uploader("Upload your Excel file", type=["xlsx"])
 
 if uploaded_file:
-    df = pd.read_excel(uploaded_file)
+    # Handle multi-row headers
+    df_raw = pd.read_excel(uploaded_file, header=[0, 1])
+    df_raw.columns = [
+        '_'.join([str(i).strip() for i in col if pd.notna(i)]).replace(" ", "_")
+        for col in df_raw.columns
+    ]
+    df = df_raw.copy()
 
     st.subheader("Sample Data Preview")
     st.dataframe(df.head())
 
-    # Extract necessary columns based on provided structure
-    overlay_col = "Overlay ID"
-    underlay_col = "Underlay CID"
-    source_col = "Applications"
-    destination_col = "Unnamed: 9"
-    policy_col = "SDWAN policy"
-    forwarding_col = "Forwaridng Profile"
+    # Expected column names after flattening
+    overlay_col = "Overlay_ID"
+    underlay_col = "Underlay_CID"
+    source_col = "Applications_Source"
+    destination_col = "Applications_Destination"
+    policy_col = "SDWAN_policy"
+    forwarding_col = "Forwarding_Profile"
     criteria_col = "Citeria"
+    next_hops = [
+        "Next_Hop(Primary)", "Next_Hop(secondary)", 
+        "Next_Hop(Turtary)", "Next_Hop(Quarternary)"
+    ]
 
-    # Next hop columns
-    next_hops = ["Next Hop", "Unnamed: 15", "Unnamed: 16", "Unnamed: 17"]
+    # Ensure all required columns exist
+    required_cols = [
+        overlay_col, underlay_col, source_col, destination_col, 
+        policy_col, forwarding_col, criteria_col
+    ] + next_hops
 
-    # Clean up columns if subheaders are flattened (e.g., Applications_Source)
-    df.columns = [col.strip().replace(" ", "_") for col in df.columns]
-
-    # Unique destination applications to choose from
-    if destination_col in df.columns:
-        unique_destinations = df[destination_col].dropna().unique().tolist()
-    else:
-        st.error(f"Column '{destination_col}' not found in the file.")
+    missing = [col for col in required_cols if col not in df.columns]
+    if missing:
+        st.error(f"Missing columns in uploaded file: {missing}")
         st.stop()
 
+    # Destination filter
+    unique_destinations = df[destination_col].dropna().unique().tolist()
     query_value = st.selectbox("Select Destination Application to Visualize", sorted(unique_destinations))
 
     if st.button("Generate Flow Diagram"):
@@ -48,7 +58,6 @@ if uploaded_file:
         else:
             G = Network(height="750px", width="100%", directed=True)
             G.barnes_hut()
-
             added_nodes = set()
             
             for _, row in filtered_df.iterrows():
@@ -57,27 +66,24 @@ if uploaded_file:
                 source = str(row[source_col])
                 destination = str(row[destination_col])
 
-                # Add overlay node (middle tunnel)
+                details = f"SD-WAN Policy: {row.get(policy_col, '')}<br>"
+                details += f"Criteria: {row.get(criteria_col, '')}<br>"
+                details += f"Forwarding Profile: {row.get(forwarding_col, '')}"
+
                 if overlay not in added_nodes:
-                    details = f"SD-WAN Policy: {row.get(policy_col, '')}<br>"
-                    details += f"Criteria: {row.get(criteria_col, '')}<br>"
-                    details += f"Forwarding Profile: {row.get(forwarding_col, '')}"
                     G.add_node(overlay, label=f"Overlay: {overlay}", title=details, color='#0074D9')
                     added_nodes.add(overlay)
 
-                # Source node
                 if source and source not in added_nodes:
                     G.add_node(source, label=f"Source: {source}", color='#2ECC40')
                     added_nodes.add(source)
                     G.add_edge(source, overlay, label="Source to Overlay")
 
-                # Underlay (transport types)
                 if underlay and underlay not in added_nodes:
                     G.add_node(underlay, label=f"Underlay: {underlay}", color='#1f77b4')
                     added_nodes.add(underlay)
                     G.add_edge(overlay, underlay, label="Overlay to Underlay")
 
-                # Add next hop nodes (Primary, Secondary...)
                 for priority, hop_col in zip(["Primary", "Secondary", "Tertiary", "Quarternary"], next_hops):
                     hop_val = row.get(hop_col)
                     if pd.notna(hop_val):
@@ -87,7 +93,7 @@ if uploaded_file:
                             added_nodes.add(hop_val)
                         G.add_edge(underlay, hop_val, label=f"To {priority}", color="#FF851B")
 
-            # Save and render HTML
+            # Save and render graph
             with tempfile.NamedTemporaryFile(delete=False, suffix=".html") as tmp_file:
                 G.write_html(tmp_file.name)
                 with open(tmp_file.name, "r", encoding="utf-8") as f:
