@@ -26,12 +26,13 @@ if uploaded_file:
     overlay_col = "Overlay_ID_Unnamed:_3_level_1"
     transport_primary="Transport_Primary"
     transport_secondary="Transport_Secondary"
-    underlay_col = "Underlay_CID_Unnamed:_4_level_1"
+    underlay_1_col = "Underlay-1_CID_Unnamed:_4_level_1"
+    underlay_2_col = "Underlay-2_CID_Unnamed:_5_level_1"
     source_col = "Applications_Source"
     destination_col = "Applications_Destination"
-    policy_col = "SDWAN_policy_Unnamed:_10_level_1"
-    forwarding_col = "Forwaridng_Profile_Unnamed:_11_level_1"
-    criteria_col = "Citeria_Unnamed:_19_level_1"
+    policy_col = "SDWAN_policy_Unnamed:_11_level_1"
+    forwarding_col = "Forwaridng_Profile_Unnamed:_12_level_1"
+    criteria_col = "Citeria_Unnamed:_20_level_1"
     next_hops = [
         "Next_Hop_Primary", "Next_Hop_Secondary", 
         "Next_Hop_Turtary", "Next_Hop_Quaternary"
@@ -39,7 +40,7 @@ if uploaded_file:
 
     # Ensure all required columns exist
     required_cols = [
-        overlay_col, underlay_col, source_col, destination_col, 
+        overlay_col, underlay_1_col, underlay_2_col, source_col, destination_col, 
         policy_col, forwarding_col, criteria_col
     ] + next_hops
 
@@ -64,7 +65,8 @@ if uploaded_file:
             
             for _, row in filtered_df.iterrows():
                 overlay = str(row[overlay_col])
-                underlay = str(row[underlay_col])
+                underlay_1 = str(row[underlay_1_col])
+                underlay_2 = str(row[underlay_2_col])
                 source = str(row[source_col])
                 destination = str(row[destination_col])
 
@@ -81,11 +83,19 @@ if uploaded_file:
                     added_nodes.add(source)
                     G.add_edge(source, overlay, label="Source to Overlay")
 
-                if underlay and underlay not in added_nodes:
-                    G.add_node(underlay, label=f"Underlay: {underlay}", color='#1f77b4')
-                    added_nodes.add(underlay)
-                    G.add_edge(overlay, underlay, label="Overlay to Underlay")
+                # Handle Underlay-1
+                if underlay_1 and underlay_1 not in added_nodes:
+                    G.add_node(underlay_1, label=f"Underlay-1: {underlay_1}", color='#1f77b4')
+                    added_nodes.add(underlay_1)
+                    G.add_edge(overlay, underlay_1, label="Overlay to Underlay-1")
 
+                # Handle Underlay-2
+                if underlay_2 and underlay_2 not in added_nodes:
+                    G.add_node(underlay_2, label=f"Underlay-2: {underlay_2}", color='#ff7f0e')
+                    added_nodes.add(underlay_2)
+                    G.add_edge(overlay, underlay_2, label="Overlay to Underlay-2")
+
+                # Add next hops for both underlays
                 for priority, hop_col in zip(["Primary", "Secondary", "Tertiary", "Quarternary"], next_hops):
                     hop_val = row.get(hop_col)
                     if pd.notna(hop_val):
@@ -93,7 +103,12 @@ if uploaded_file:
                         if hop_val not in added_nodes:
                             G.add_node(hop_val, label=f"Next Hop ({priority}): {hop_val}", color='#FF851B')
                             added_nodes.add(hop_val)
-                        G.add_edge(underlay, hop_val, label=f"To {priority}", color="#FF851B")
+                        
+                        # Connect next hops to both underlays if they exist
+                        if underlay_1:
+                            G.add_edge(underlay_1, hop_val, label=f"To {priority}", color="#FF851B")
+                        if underlay_2:
+                            G.add_edge(underlay_2, hop_val, label=f"To {priority}", color="#FF851B")
 
             # Save and render graph
             with tempfile.NamedTemporaryFile(delete=False, suffix=".html") as tmp_file:
@@ -103,8 +118,8 @@ if uploaded_file:
                 st.components.v1.html(html_content, height=750, scrolling=True)
                 os.unlink(tmp_file.name)
 
- # Display raw table for the selected destination
-                st.subheader(f"Details for Destination: {query_value}")
-                display_cols = [source_col, overlay_col, underlay_col] + next_hops + [policy_col, criteria_col, forwarding_col, transport_primary, transport_secondary]
-                transposed_df = filtered_df[display_cols].T
-                st.dataframe(transposed_df)
+            # Display raw table for the selected destination
+            st.subheader(f"Details for Destination: {query_value}")
+            display_cols = [source_col, overlay_col, underlay_1_col, underlay_2_col] + next_hops + [policy_col, criteria_col, forwarding_col, transport_primary, transport_secondary]
+            transposed_df = filtered_df[display_cols].T
+            st.dataframe(transposed_df)
