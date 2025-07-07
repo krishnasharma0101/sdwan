@@ -24,6 +24,8 @@ if uploaded_file:
 
     # Expected column names after flattening
     overlay_col = "Overlay_ID_Unnamed:_3_level_1"
+    transport_primary="Transport_Primary"
+    transport_secondary="Transport_Secondary"
     underlay_col = "Underlay_CID_Unnamed:_4_level_1"
     source_col = "Applications_Source"
     destination_col = "Applications_Destination"
@@ -103,5 +105,5 @@ if uploaded_file:
 
  # Display raw table for the selected destination
                 st.subheader(f"Details for Destination: {query_value}")
-                display_cols = [source_col, overlay_col, underlay_col] + next_hops + [policy_col, criteria_col, forwarding_col]
+                display_cols = [source_col, overlay_col, underlay_col] + next_hops + [policy_col, criteria_col, forwarding_col, transport_primary, transport_secondary]
                 st.dataframe(filtered_df[display_cols])
