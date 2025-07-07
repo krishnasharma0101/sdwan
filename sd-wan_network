@@ -1,0 +1,28 @@
+digraph "SD-WAN Network" {
+	graph [fontcolor="#2D3436" fontname="Sans-Serif" fontsize=15 label="SD-WAN Network" nodesep=0.60 pad=2.0 rankdir=LR ranksep=0.75 splines=ortho]
+	node [fixedsize=true fontcolor="#2D3436" fontname="Sans-Serif" fontsize=13 height=1.4 imagescale=true labelloc=b shape=box style=rounded width=1.4]
+	edge [color="#7B8894"]
+	subgraph "cluster_Site-1" {
+		graph [bgcolor="#E5F5FD" fontname="Sans-Serif" fontsize=12 label="Site-1" labeljust=l pencolor="#AEB6BE" rankdir=LR shape=box style=rounded]
+		"1c72866bcb70485cac3d4ac38568837e" [label="vEdge-1" height=1.9 image="./icons/router.png" shape=none]
+	}
+	subgraph "cluster_Site-2" {
+		graph [bgcolor="#E5F5FD" fontname="Sans-Serif" fontsize=12 label="Site-2" labeljust=l pencolor="#AEB6BE" rankdir=LR shape=box style=rounded]
+		"67696463bca3437c869efbbd89b03782" [label="vEdge-2" height=1.9 image="./icons/router.png" shape=none]
+	}
+	subgraph "cluster_Site-3
+(Security Stack)" {
+		graph [bgcolor="#E5F5FD" fontname="Sans-Serif" fontsize=12 label="Site-3
+(Security Stack)" labeljust=l pencolor="#AEB6BE" rankdir=LR shape=box style=rounded]
+		"7dcea1f855c84405855670f1d8cccdb1" [label="vEdge-3" height=1.9 image="./icons/router.png" shape=none]
+	}
+	"2165a21606874f178972bc8867853ec8" [label=WAN height=1.9 image="C:\Users\KrisShar\AppData\Roaming\Python\Python311\site-packages\resources/onprem/network\internet.png" shape=none]
+	"1c72866bcb70485cac3d4ac38568837e" -> "2165a21606874f178972bc8867853ec8" [dir=forward fontcolor="#2D3436" fontname="Sans-Serif" fontsize=13]
+	"2165a21606874f178972bc8867853ec8" -> "67696463bca3437c869efbbd89b03782" [dir=forward fontcolor="#2D3436" fontname="Sans-Serif" fontsize=13]
+	"1c72866bcb70485cac3d4ac38568837e" -> "2165a21606874f178972bc8867853ec8" [dir=forward fontcolor="#2D3436" fontname="Sans-Serif" fontsize=13]
+	"2165a21606874f178972bc8867853ec8" -> "7dcea1f855c84405855670f1d8cccdb1" [dir=forward fontcolor="#2D3436" fontname="Sans-Serif" fontsize=13]
+	"67696463bca3437c869efbbd89b03782" -> "2165a21606874f178972bc8867853ec8" [dir=forward fontcolor="#2D3436" fontname="Sans-Serif" fontsize=13]
+	"2165a21606874f178972bc8867853ec8" -> "7dcea1f855c84405855670f1d8cccdb1" [dir=forward fontcolor="#2D3436" fontname="Sans-Serif" fontsize=13]
+	"1c72866bcb70485cac3d4ac38568837e" -> "7dcea1f855c84405855670f1d8cccdb1" [dir=forward fontcolor="#2D3436" fontname="Sans-Serif" fontsize=13]
+	"67696463bca3437c869efbbd89b03782" -> "7dcea1f855c84405855670f1d8cccdb1" [dir=forward fontcolor="#2D3436" fontname="Sans-Serif" fontsize=13]
+}
