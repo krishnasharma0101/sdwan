@@ -28,7 +28,7 @@ if uploaded_file:
     source_col = "Applications_Source"
     destination_col = "Applications_Destination"
     policy_col = "SDWAN_policy_Unnamed:_10_level_1"
-    forwarding_col = "Forwaridng_Profile_Unnamed:_10_level_1"
+    forwarding_col = "Forwaridng_Profile_Unnamed:_11_level_1"
     criteria_col = "Citeria_Unnamed:_19_level_1"
     next_hops = [
         "Next_Hop_Primary", "Next_Hop_Secondary", 
